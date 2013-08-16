@@ -9,7 +9,7 @@ Gem::Specification.new do |s|
   s.description       = "Test runner for one-shot command line tools. This was built to support writing git hooks over at http://github.com/samsalisbury/righteous-git-hooks"
   s.rubyforge_project = s.name
  
-  s.required_rubygems_version = "&gt;= 1.3.6"
+  s.required_rubygems_version = ">= 1.3.6"
  
   # If you have runtime dependencies, add them here
   # s.add_runtime_dependency "other", "~&gt; 1.2"
