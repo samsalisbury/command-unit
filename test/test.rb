@@ -2,7 +2,7 @@ require_relative '../lib/command-unit'
 
 include CommandUnit
 
-s = scenario 'Running a scenario with no tests or assertions' do
+scenario :command_unit, 'Running a scenario with no tests or assertions' do
 
   when_i 'execute the scenario' do |context|
     context[:scenario] = scenario 'This is an empty scenario' do
@@ -23,4 +23,4 @@ s = scenario 'Running a scenario with no tests or assertions' do
 
 end
 
-run s
+run :command_unit

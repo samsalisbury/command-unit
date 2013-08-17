@@ -6,18 +6,39 @@ module CommandUnit
   @@current_scenario = nil
   attr_reader :current_scenario
 
-  def scenario(description, &block)
-    @@scenarios.push Scenario.new(description, &block)
+  def scenario(namespace_or_description, description_or_nil=nil, &block)
+    raise "You must provide a description (String) for each scenario." if namespace_or_description.nil? or description_or_nil.is_a? Symbol
+    raise "namespace must be a symbol, if you meant it as a description, use a string instead." if description_or_nil.is_a? String and not namespace_or_description.is_a? Symbol
+
+    if description_or_nil.nil?
+      description = namespace_or_description
+      namespace = nil
+    else
+      description = description_or_nil
+      namespace = namespace_or_description
+    end
+
+    @@scenarios.push Scenario.new(namespace, description, &block)
     return @@scenarios.last
   end
 
-  def run(a_scenario = nil)
-    if a_scenario.nil?
+  def run(namespace_or_scenario_or_nowt = nil)
+    if namespace_or_scenario_or_nowt.nil?
+      # Run the lot...
       @@scenarios.each do |scenario|
         scenario.run
       end
     else
-      a_scenario.run
+      if namespace_or_scenario_or_nowt.is_a? Symbol
+        @@scenarios.each do |scenario|
+          next unless scenario.namespace == namespace_or_scenario_or_nowt
+          scenario.run
+        end
+      elsif namespace_or_scenario.is_a? Scenario
+        namespace_or_scenario_or_nowt.run
+      else
+        raise "You must pass either a Scenario, a Symbol (namespace), or nil into run. You passed a #{namespace_or_scenario_or_nowt.class}"
+      end
     end
   end
 
@@ -76,7 +97,8 @@ module CommandUnit
   end
 
   class Scenario
-    def initialize(desc, &block)
+    def initialize(namespace, desc, &block)
+      @namespace = namespace
       @id = @@scenario_count += 1
       @desc = desc
       @block = block
@@ -134,7 +156,8 @@ module CommandUnit
       @current_test = test
     end
 
-    attr_accessor :desc, :block, :set_up_block, :tests, :tear_down_block, :current_test, :scenario_set_up_block, :scenario_tear_down_block
+    attr_accessor :desc, :block, :set_up_block, :tests, :tear_down_block, :current_test,
+                  :scenario_set_up_block, :scenario_tear_down_block, :namespace
   end
 
   class Test
