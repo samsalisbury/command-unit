@@ -116,7 +116,7 @@ module CommandUnit
     end
 
     def run
-      puts "Running scenario #{@id}: #{@desc}"
+      puts "\nRunning scenario #{@id}: #{@desc}"
       @@current_scenario = self
       @block.call
       context = {}
