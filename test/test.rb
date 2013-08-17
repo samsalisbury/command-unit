@@ -45,6 +45,15 @@ scenario :command_unit, 'Running a scenario with 1 test and 1 passing assertion'
       failure
     end
   end
+
+  i_expect 'to see the correct number of tests and expectations reported' do |context|
+    if context[:out].include? '1 tests, 1 expectations with 1 successful and 0 failures'
+      success
+    else
+      failure
+    end
+
+  end
 end
 
 run :command_unit
