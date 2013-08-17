@@ -60,6 +60,14 @@ module CommandUnit
     @@current_scenario.current_test.add_expectation Expectation.new(desc, &i_expect_block)
   end
 
+  def success(desc = '')
+    ExpectationResult.new(desc, true)
+  end
+
+  def failure(desc = '')
+    ExpectationResult.new(desc, false)
+  end
+
   class Scenario
     def initialize(desc, &block)
       @desc = desc
@@ -69,6 +77,12 @@ module CommandUnit
       @current_test = nil
       @tear_down_block = nil
       @scenario_set_up_block = nil
+      @scenario_tear_down_block = nil
+      @tests_run = 0
+      @expectations_run = 0
+      @expectations_met = 0
+      @expectations_not_met = 0
+      @inconclusive_expectations = 0
     end
 
     def run
@@ -79,16 +93,32 @@ module CommandUnit
       @scenario_set_up_block.call(context) unless @scenario_set_up_block.nil?
       @tests.each do |test|
         puts "When I #{test.when_i_text}"
+        @tests_run += 1
         @set_up_block.call(context) unless @set_up_block.nil?
         test.when_i_block.call(context) unless test.when_i_block.nil?
         test.expectations.each do |expectation|
-          puts "I expect #{expectation.desc}"
-          expectation.block.call(context) unless expectation.block.nil?
+          print "I expect #{expectation.desc}..."
+          result = expectation.block.call(context)
+          @expectations_run += 1
+          if result.respond_to? :success?
+            if result.success?
+              @expectations_met +=1
+              puts "Success! #{result.message}"
+            else
+              @expectations_not_met +=1
+              puts "Failure! #{result.message}"
+            end
+          else
+            @inconclusive_expectations += 1
+            puts "Inconclusive! #{result}"
+          end
         end
         @tear_down_block.call(context) unless @tear_down_block.nil?
       end
       @scenario_tear_down_block.call(context) unless @scenario_tear_down_block.nil?
       @@current_scenario = nil
+
+      puts "Scenario finished, #{@tests_run} tests, #{@expectations_run} expectations with #{@expectations_met} successful and #{@expectations_not_met} failures."
     end
 
     def add_test(test)
@@ -119,4 +149,15 @@ module CommandUnit
     attr_accessor :desc, :block
   end
 
+  class ExpectationResult
+    def initialize(description, expectation_met)
+      @message = description
+      @success = expectation_met
+    end
+    attr_reader :message
+    def success?
+      @success
+    end
+
+  end
 end

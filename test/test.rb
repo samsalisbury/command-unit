@@ -15,9 +15,9 @@ scenario 'Running a scenario with no tests or assertions' do
 
   i_expect 'to see the scenario title' do |context|
     if context[:out].include? 'This is an empty scenario' then
-      puts 'Success!' 
+      success
     else
-      puts "Failure! Output was: '#{context[:out]}'"
+      failure "Output was: '#{context[:out]}'"
     end
   end
 
