@@ -32,6 +32,33 @@ scenario 'When blahblahs are whatnots' do
     context[:thing3] = 'thang'
   end
 
+  when_i "create another test" do |context|
+    # Doing nothing
+    puts 'when_i called!'
+    context[:thing2] = 'thing'
+  end
+
+  i_expect 'that the second test is also run' do |context|
+    puts 'i_expect called!'
+    context[:thing3] = 'thang'
+  end
+
+  when_i "create a third test with 2 expectations" do |context|
+    # Doing nothing
+    puts 'when_i called!'
+    context[:thing2] = 'thing'
+  end
+
+  i_expect 'that both expectations are called' do |context|
+    puts 'i_expect called!'
+    context[:thing3] = 'thang'
+  end
+
+  i_expect 'that this second expectation will also be called!' do |context|
+    puts 'i_expect called!'
+    context[:thing3] = 'thang'
+  end
+
 end
 
 run
