@@ -6,12 +6,24 @@ module CommandUnit
 
   def scenario(description, &block)
     @@scenarios.push Scenario.new(description, &block)
+    return @@scenarios.last
   end
 
   def run
     @@scenarios.each do |scenario|
       scenario.run
     end
+  end
+
+  require 'stringio'
+
+  def capture_stdout
+    out = StringIO.new
+    $stdout = out
+    yield
+    return out.string
+  ensure
+    $stdout = STDOUT
   end
 
   def ensure_inside_scenario
@@ -69,9 +81,8 @@ module CommandUnit
         puts "When I #{test.when_i_text}"
         @set_up_block.call(context) unless @set_up_block.nil?
         test.when_i_block.call(context) unless test.when_i_block.nil?
-        print 'I expect '
         test.expectations.each do |expectation|
-          puts expectation.desc
+          puts "I expect #{expectation.desc}"
           expectation.block.call(context) unless expectation.block.nil?
         end
         @tear_down_block.call(context) unless @tear_down_block.nil?
