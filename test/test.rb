@@ -8,19 +8,43 @@ scenario :command_unit, 'Running a scenario with no tests or assertions' do
     context[:scenario] = scenario 'This is an empty scenario' do
 
     end
-    context[:out] = capture_stdout do
-      context[:scenario].run
-    end
+    context[:out] = capture_stdout { context[:scenario].run }
   end
 
   i_expect 'to see the scenario title' do |context|
-    if context[:out].include? 'This is an empty scenario' then
+    if context[:out].include? 'This is an empty scenario'
       success
     else
       failure "Output was: '#{context[:out]}'"
     end
   end
 
+end
+
+scenario :command_unit, 'Running a scenario with 1 test and 1 passing assertion' do
+
+  set_up do |context|
+    context[:scenario] = scenario 'This scenario has 1 test with 1 assertion' do
+      when_i 'have 1 test in the scenario' do
+        # Empty test test ;)
+      end
+      i_expect 'that this should pass' do
+        success
+      end
+    end
+  end
+
+  when_i 'run the scenario' do |context|
+    context[:out] = capture_stdout do context[:scenario].run end
+  end
+
+  i_expect 'to see the when_i text and the i_expect text' do |context|
+    if context[:out].include? 'have 1 test in the scenario' and context[:out].include? 'that this should pass'
+      success
+    else 
+      failure
+    end
+  end
 end
 
 run :command_unit
