@@ -1,3 +1,5 @@
+require_relative '../lib/command-unit'
+
 include CommandUnit
 
 scenario 'When blahblahs are whatnots' do
