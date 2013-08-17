@@ -1,5 +1,7 @@
 module CommandUnit
 
+  @@scenario_count = 0
+
   @@scenarios = []
   @@current_scenario = nil
   attr_reader :current_scenario
@@ -9,9 +11,13 @@ module CommandUnit
     return @@scenarios.last
   end
 
-  def run
-    @@scenarios.each do |scenario|
-      scenario.run
+  def run(a_scenario = nil)
+    if a_scenario.nil?
+      @@scenarios.each do |scenario|
+        scenario.run
+      end
+    else
+      a_scenario.run
     end
   end
 
@@ -21,7 +27,8 @@ module CommandUnit
     out = StringIO.new
     $stdout = out
     yield
-    return out.string
+    r = out.string
+    return r
   ensure
     $stdout = STDOUT
   end
@@ -70,6 +77,7 @@ module CommandUnit
 
   class Scenario
     def initialize(desc, &block)
+      @id = @@scenario_count += 1
       @desc = desc
       @block = block
       @set_up_block = nil
@@ -86,7 +94,7 @@ module CommandUnit
     end
 
     def run
-      puts "Running scenario: #{@desc}"
+      puts "Running scenario #{@id}: #{@desc}"
       @@current_scenario = self
       @block.call
       context = {}
@@ -118,7 +126,7 @@ module CommandUnit
       @scenario_tear_down_block.call(context) unless @scenario_tear_down_block.nil?
       @@current_scenario = nil
 
-      puts "Scenario finished, #{@tests_run} tests, #{@expectations_run} expectations with #{@expectations_met} successful and #{@expectations_not_met} failures."
+      puts "Scenario #{@id} finished, #{@tests_run} tests, #{@expectations_run} expectations with #{@expectations_met} successful and #{@expectations_not_met} failures."
     end
 
     def add_test(test)
