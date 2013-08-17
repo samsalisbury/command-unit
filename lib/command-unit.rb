@@ -14,18 +14,37 @@ module CommandUnit
     end
   end
 
+  def ensure_inside_scenario
+    raise "#{caller[0]} must be called from inside a scenario block" if @@current_scenario == nil
+  end
+
+  def scenario_set_up(&scenario_set_up_block)
+    ensure_inside_scenario
+    @@current_scenario.scenario_set_up_block = scenario_set_up_block
+  end
+
+  def scenario_tear_down(&scenario_tear_down_block)
+    ensure_inside_scenario
+    @@current_scenario.scenario_tear_down_block = scenario_tear_down_block
+  end
+
+  def tear_down(&tear_down_block)
+    ensure_inside_scenario
+    @@current_scenario.tear_down_block = tear_down_block
+  end
+
   def set_up(&set_up_block)
-    raise 'set_up must be called from inside a scenario block' if @@current_scenario == nil
+    ensure_inside_scenario
     @@current_scenario.set_up_block = set_up_block
   end
 
   def when_i(desc, &when_i_block)
-    raise 'when_i must be called from inside a scenario block' if @@current_scenario == nil
+    ensure_inside_scenario
     @@current_scenario.add_test Test.new(desc, &when_i_block)
   end
 
   def i_expect(desc, &i_expect_block)
-    raise 'i_expect must be called from inside a scenario block' if @@current_scenario == nil
+    ensure_inside_scenario
     @@current_scenario.current_test.add_expectation Expectation.new(desc, &i_expect_block)
   end
 
@@ -37,15 +56,17 @@ module CommandUnit
       @tests = []
       @current_test = nil
       @tear_down_block = nil
+      @scenario_set_up_block = nil
     end
 
     def run
       puts "Running scenario: #{@desc}"
       @@current_scenario = self
       @block.call
+      context = {}
+      @scenario_set_up_block.call(context) unless @scenario_set_up_block.nil?
       @tests.each do |test|
         puts "When I #{test.when_i_text}"
-        context = {}
         @set_up_block.call(context) unless @set_up_block.nil?
         test.when_i_block.call(context) unless test.when_i_block.nil?
         print 'I expect '
@@ -53,7 +74,9 @@ module CommandUnit
           puts expectation.desc
           expectation.block.call(context) unless expectation.block.nil?
         end
+        @tear_down_block.call(context) unless @tear_down_block.nil?
       end
+      @scenario_tear_down_block.call(context) unless @scenario_tear_down_block.nil?
       @@current_scenario = nil
     end
 
@@ -62,7 +85,7 @@ module CommandUnit
       @current_test = test
     end
 
-    attr_accessor :desc, :block, :set_up_block, :tests, :tear_down_block, :current_test
+    attr_accessor :desc, :block, :set_up_block, :tests, :tear_down_block, :current_test, :scenario_set_up_block, :scenario_tear_down_block
   end
 
   class Test
