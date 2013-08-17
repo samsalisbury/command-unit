@@ -122,12 +122,12 @@ module CommandUnit
       context = {}
       @scenario_set_up_block.call(context) unless @scenario_set_up_block.nil?
       @tests.each do |test|
-        puts "When I #{test.when_i_text}"
+        puts "\tWhen I #{test.when_i_text}"
         @tests_run += 1
         @set_up_block.call(context) unless @set_up_block.nil?
         test.when_i_block.call(context) unless test.when_i_block.nil?
         test.expectations.each do |expectation|
-          print "I expect #{expectation.desc}..."
+          print "\t\tI expect #{expectation.desc}..."
           result = expectation.block.call(context)
           @expectations_run += 1
           if result.respond_to? :success?
