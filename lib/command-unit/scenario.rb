@@ -53,7 +53,8 @@ module CommandUnit
               test_failed = true
               scenario_failed = true
               @expectations_not_met +=1
-              out_stream.puts "Failure! #{result.message}".console_red
+              out_stream.puts "Failure!".console_red
+              out_stream.puts result.message
             end
           else
             test_failed = true

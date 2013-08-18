@@ -48,7 +48,8 @@ module CommandUnit
 			@expectations_failed += 1
 		end
 
-		attr_reader :scenarios_run, :scenarios_passed, :tests_run, :tests_passed,
-		            :expecations_run, :expecations_passed
+		attr_reader :scenarios_run, :scenarios_passed, :scenarios_failed,
+		            :tests_run, :tests_passed, :tests_failed,
+		            :expectations_run, :expectations_passed, :expectations_failed
 	end
 end

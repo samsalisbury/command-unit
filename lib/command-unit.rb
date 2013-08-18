@@ -61,7 +61,10 @@ module CommandUnit
       end
     end
 
-    out_stream.puts "\nRan 1 scenario, 1 passed, 0 failed (tests passed: 1, failed 0) (expectations passed: 1, failed 0)\n"
+    t = hooks.totaliser
+    message = "\nRan #{t.scenarios_run} scenarios, #{t.scenarios_passed} passed, #{t.scenarios_failed} failed (tests passed: #{t.tests_passed}, failed: #{t.tests_failed}) (expectations passed: #{t.expectations_passed}, failed: #{t.expectations_failed})\n"
+
+    out_stream.puts message
   end
 
   def ensure_inside_scenario

@@ -3,7 +3,7 @@ include CommandUnit
 scenario :command_unit, 'Running a scenario with 1 test and 1 failing assertion from CommandUnit::run' do
 
   set_up do
-    scenario :group_1, 'This is the one scenario' do
+    scenario :one_test_one_failing_expectation, 'This is the one scenario' do
       when_i 'this is the one test' do
         # Nowt ;)
       end
@@ -14,7 +14,7 @@ scenario :command_unit, 'Running a scenario with 1 test and 1 failing assertion 
   end
 
   when_i 'run the one scenario' do |context|
-    context[:out] = run_silent :group_1
+    context[:out] = run_silent :one_test_one_failing_expectation
   end
 
   i_expect 'to see the when_i text' do |context|
@@ -37,15 +37,15 @@ scenario :command_unit, 'Running a scenario with 1 test and 1 failing assertion 
     if context[:out].include? '1 tests, 1 expectations with 0 successful and 1 failures'
       pass
     else
-      fail
+      fail "\n\n=====\n\n#{context[:out]}\n\n=====\n\n"
     end
   end
 
   i_expect 'to see the total number of run scenarios and totals' do |context|
-    if context[:out].include? 'Ran 1 scenario, 1 failed (tests passed: 0, failed 1) (expectations passed: 0, failed 1)'
+    if context[:out].include? 'Ran 1 scenarios, 0 passed, 1 failed (tests passed: 0, failed: 1) (expectations passed: 0, failed: 1)'
       pass
     else
-      fail
+      fail "\n\n=====\n\n#{context[:out]}\n\n=====\n\n"
     end
   end
 
