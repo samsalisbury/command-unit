@@ -1,6 +1,9 @@
 require_relative '../lib/command-unit'
 
-require_relative 'scenarios/empty_scenario'
-require_relative 'scenarios/one_test_one_passing_expectation'
+include CommandUnit
+
+Dir[File.dirname(__FILE__) + '/scenarios/*.rb'].each do |file|
+  require File.expand_path(file)
+end
 
 run :command_unit
