@@ -28,12 +28,18 @@ module CommandUnit
     return @@scenarios.last
   end
 
+  def run_silent(namespace_or_nil=nil)
+    output = StringIO.new
+    run(namespace_or_nil, output)
+    return output.string
+  end
+
   def run(namespace_or_scenario_or_nowt = nil, out_stream=STDOUT)
     if namespace_or_scenario_or_nowt.nil?
       # Run the lot...
       out_stream.puts "\nRunning #{@@scenarios.count} scenarios..."
       @@scenarios.each do |scenario|
-        scenario.run
+        scenario.run(out_stream)
       end
     else
       if namespace_or_scenario_or_nowt.is_a? Symbol
@@ -41,11 +47,12 @@ module CommandUnit
         scenarios_in_namespace = @@scenarios.select { |s| s.namespace == namespace }
         out_stream.puts "\nRunning #{scenarios_in_namespace.length} scenarios in namespace '#{namespace}'..."
         scenarios_in_namespace.each do |scenario|
-          scenario.run
+          scenario.run(out_stream)
         end
       elsif namespace_or_scenario.is_a? Scenario
+        scenario = namespace_or_scenario
         out_stream.puts "\nRunning single scenario..."
-        namespace_or_scenario_or_nowt.run
+        scenario.run(out_stream)
       else
         raise "You must pass either a Scenario, a Symbol (namespace), or nil into run. You passed a #{namespace_or_scenario_or_nowt.class}"
       end
