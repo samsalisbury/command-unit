@@ -4,6 +4,7 @@ require_relative 'command-unit/test'
 require_relative 'command-unit/expectation'
 require_relative 'command-unit/expectation_result'
 require_relative 'command-unit/hooks'
+require_relative 'command-unit/expectation_helpers'
 
 module CommandUnit
 
@@ -99,14 +100,6 @@ module CommandUnit
   def i_expect(desc, &i_expect_block)
     ensure_inside_scenario
     @@current_scenario.current_test.add_expectation Expectation.new(desc, &i_expect_block)
-  end
-
-  def pass(desc = '')
-    ExpectationResult.new(desc, true)
-  end
-
-  def fail(desc = '')
-    ExpectationResult.new(desc, false)
   end
 
 end
