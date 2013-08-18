@@ -22,36 +22,63 @@ module CommandUnit
       @inconclusive_expectations = 0
     end
 
-    def run(out_stream=@out_stream)
+    def run(hooks, out_stream=@out_stream)
+      raise "CommandUnit::Scenario.run hooks must be of type Hooks" unless hooks.is_a? Hooks
+      hooks.fire(:before_scenario)
+      scenario_failed = false
       out_stream.puts "\nRunning scenario #{@id}: #{@desc}"
       @@current_scenario = self
       @block.call
       context = {}
       @scenario_set_up_block.call(context) unless @scenario_set_up_block.nil?
       @tests.each do |test|
+        hooks.fire(:before_test)
+        test_failed = false
         out_stream.puts "\tWhen I #{test.when_i_text}"
         @tests_run += 1
         @set_up_block.call(context) unless @set_up_block.nil?
         test.when_i_block.call(context) unless test.when_i_block.nil?
         test.expectations.each do |expectation|
+          hooks.fire :before_expectation
           out_stream.print "\t\tI expect #{expectation.desc}..."
           result = expectation.block.call(context)
           @expectations_run += 1
           if result.respond_to? :success?
             if result.success?
+              hooks.fire :expectation_pass
               @expectations_met +=1
               out_stream.puts "Success! #{result.message}".console_green
             else
+              hooks.fire :expectation_fail
+              test_failed = true
+              scenario_failed = true
               @expectations_not_met +=1
               out_stream.puts "Failure! #{result.message}".console_red
             end
           else
+            test_failed = true
             @inconclusive_expectations += 1
             out_stream.puts "Inconclusive! #{result}".console_yellow
           end
+          hooks.fire :after_expectation
         end
+        if test_failed
+          hooks.fire :test_fail
+        else
+          hooks.fire :test_pass
+        end
+
+        hooks.fire :after_test
         @tear_down_block.call(context) unless @tear_down_block.nil?
       end
+
+      if scenario_failed
+        hooks.fire :scenario_fail
+      else
+        hooks.fire :scenario_pass
+      end
+
+      hooks.fire :after_scenario
       @scenario_tear_down_block.call(context) unless @scenario_tear_down_block.nil?
       @@current_scenario = nil
 
@@ -60,9 +87,9 @@ module CommandUnit
       out_stream.puts "Scenario #{@id} finished, #{@tests_run} tests, #{@expectations_run} expectations with #{@expectations_met} successful and #{@expectations_not_met} failures.".console_colour(colour)
     end
 
-    def run_silent
+    def run_silent(hooks)
       buffer = StringIO.new
-      run(buffer)
+      run(hooks, buffer)
       return buffer.string
     end
 

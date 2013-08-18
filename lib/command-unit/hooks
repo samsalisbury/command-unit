@@ -1,0 +1,7 @@
+module CommandUnit
+
+	class Hooks
+
+	end
+
+end

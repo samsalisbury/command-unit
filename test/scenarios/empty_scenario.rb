@@ -6,7 +6,7 @@ scenario :command_unit, 'Running a scenario with no tests or assertions' do
     context[:scenario] = scenario 'This is an empty scenario' do
 
     end
-    context[:out] = context[:scenario].run_silent
+    context[:out] = context[:scenario].run_silent(Hooks.new)
   end
 
   i_expect 'to see the scenario title' do |context|

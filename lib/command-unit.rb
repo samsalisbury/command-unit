@@ -3,6 +3,7 @@ require_relative 'command-unit/scenario'
 require_relative 'command-unit/test'
 require_relative 'command-unit/expectation'
 require_relative 'command-unit/expectation_result'
+require_relative 'command-unit/hooks'
 
 module CommandUnit
 
@@ -35,12 +36,13 @@ module CommandUnit
     return output.string
   end
 
-  def run(namespace_or_scenario_or_nowt = nil, out_stream=STDOUT)
+  def run(namespace_or_scenario_or_nowt=nil, out_stream=STDOUT)
+    hooks = Hooks.new
     if namespace_or_scenario_or_nowt.nil?
       # Run the lot...
       out_stream.puts "\nRunning #{@@scenarios.count} scenarios..."
       @@scenarios.each do |scenario|
-        scenario.run(out_stream)
+        scenario.run(hooks, out_stream)
       end
     else
       if namespace_or_scenario_or_nowt.is_a? Symbol
@@ -48,18 +50,18 @@ module CommandUnit
         scenarios_in_namespace = @@scenarios.select { |s| s.namespace == namespace }
         out_stream.puts "\nRunning #{scenarios_in_namespace.length} scenarios in namespace '#{namespace}'..."
         scenarios_in_namespace.each do |scenario|
-          scenario.run(out_stream)
+          scenario.run(hooks, out_stream)
         end
       elsif namespace_or_scenario.is_a? Scenario
         scenario = namespace_or_scenario
         out_stream.puts "\nRunning single scenario..."
-        scenario.run(out_stream)
+        scenario.run(hooks, out_stream)
       else
         raise "You must pass either a Scenario, a Symbol (namespace), or nil into run. You passed a #{namespace_or_scenario_or_nowt.class}"
       end
     end
 
-    out_stream.puts "\nRan 1 scenario (1 tests, 1 expectation); All passed :)\n"
+    out_stream.puts "\nRan 1 scenario, 1 passed, 0 failed (tests passed: 1, failed 0) (expectations passed: 1, failed 0)\n"
   end
 
   def ensure_inside_scenario
