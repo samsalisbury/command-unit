@@ -1,7 +1,7 @@
-require_relative 'scenario'
-require_relative 'test'
-require_relative 'expectation'
-require_relative 'expectation_result'
+require_relative 'command-unit/scenario'
+require_relative 'command-unit/test'
+require_relative 'command-unit/expectation'
+require_relative 'command-unit/expectation_result'
 
 module CommandUnit
 
