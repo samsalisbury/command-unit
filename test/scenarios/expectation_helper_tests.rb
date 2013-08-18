@@ -20,6 +20,18 @@ def expect_failing(result)
 	end
 end
 
+def expect_failing_with_message(result, expected_message)
+	if not result.is_a? ExpectationResult
+		fail 'Expecting an ExpectationResult'
+	elsif result.success? != false
+		fail 'Expecting a failure'
+	elsif result.message != expected_message
+		fail "Expecting failure message '#{expected_message}', but got '#{result.message}'"
+	else
+		pass
+	end
+end
+
 scenario :command_unit, 'Using expectation helpers' do
 	
 	when_i 'use the expect helper with a boolean true' do |context|
@@ -36,6 +48,10 @@ scenario :command_unit, 'Using expectation helpers' do
 
 	i_expect 'to get a failing result' do |context|
 		expect_failing context[:result]
+	end
+
+	i_expect 'to get a failing result with message saying "Expected true but was false."' do |context|
+		expect_failing_with_message context[:result], 'Expected true but was false.'
 	end
 
 	when_i 'use the expect helper with a value and a Proc returning true' do |context|
@@ -56,6 +72,16 @@ scenario :command_unit, 'Using expectation helpers' do
 
 	i_expect 'to get a failing result' do |context|
 		expect_failing context[:result]
+	end
+
+	when_i 'use the expect helper with a value and a Proc returning false and a message' do |context|
+		context[:result] = expect 'anything' do
+			[false, 'Failure message']
+		end
+	end
+
+	i_expect 'to get a failing result' do |context|
+		expect_failing_with_message context[:result], 'Failure message'
 	end
 
 	when_i 'use the expect helper with is_equal_to and the things are equal' do |context|

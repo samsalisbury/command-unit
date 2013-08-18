@@ -10,8 +10,10 @@ module CommandUnit
 
 	def expect(thing, &proc)
 		if proc.nil?
-			if thing == !!thing
-				return ExpectationResult.new('', thing)
+			if thing == true
+				return ExpectationResult.new('', true)
+			elsif thing == false
+				return ExpectationResult.new('Expected true but was false.', false)
 			else
 				raise "CommandUnit::expect requires either true, false or any other value with a Proc"
 			end
