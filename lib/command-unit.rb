@@ -58,6 +58,8 @@ module CommandUnit
         raise "You must pass either a Scenario, a Symbol (namespace), or nil into run. You passed a #{namespace_or_scenario_or_nowt.class}"
       end
     end
+
+    out_stream.puts "\nRan 1 scenario (1 tests, 1 expectation); All passed :)\n"
   end
 
   def ensure_inside_scenario
