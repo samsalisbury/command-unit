@@ -34,7 +34,7 @@ module CommandUnit
         @set_up_block.call(context) unless @set_up_block.nil?
         test.when_i_block.call(context) unless test.when_i_block.nil?
         test.expectations.each do |expectation|
-          print "\t\tI expect #{expectation.desc}..."
+          out_stream.print "\t\tI expect #{expectation.desc}..."
           result = expectation.block.call(context)
           @expectations_run += 1
           if result.respond_to? :success?
