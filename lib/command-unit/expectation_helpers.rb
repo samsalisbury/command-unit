@@ -37,4 +37,16 @@ module CommandUnit
 		end
 	end
 
+	def contains(this_thing)
+		return Proc.new do |collection|
+			if not collection.respond_to? :include?
+				[false, "Unable to test if '#{collection}' contains '#{this_thing}' as it has no include? method."]
+			elsif collection.include? this_thing
+				true
+			else
+				[false, "Expected '#{collection}' to contain '#{this_thing}'."]
+			end
+		end
+	end
+
 end

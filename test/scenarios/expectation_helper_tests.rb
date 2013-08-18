@@ -100,4 +100,24 @@ scenario :command_unit, 'Using expectation helpers' do
 		expect_failing context[:result]
 	end
 
+	when_i 'use the expect helper with contains returns true when one string contains another' do |context|
+		context[:result] = expect "This is a string.", &contains('is a st')
+	end
+
+	i_expect 'to get a passing result' do |context|
+		expect_passing context[:result]
+	end
+
+	when_i 'use the expect helper with contains returns true when one string does not contain another' do |context|
+		context[:result] = expect "This is a string.", &contains('pancreas')
+	end
+
+	i_expect 'to get a failing result' do |context|
+		expect_failing context[:result]
+	end
+
+	i_expect 'to get a failing result with message saying "Expected \'This is a string.\' to contain \'pancreas\'."' do |context|
+		expect_failing_with_message context[:result], "Expected 'This is a string.' to contain 'pancreas'."
+	end
+
 end
