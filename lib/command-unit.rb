@@ -1,3 +1,4 @@
+require 'stringio'
 require_relative 'command-unit/scenario'
 require_relative 'command-unit/test'
 require_relative 'command-unit/expectation'
@@ -57,18 +58,6 @@ module CommandUnit
         raise "You must pass either a Scenario, a Symbol (namespace), or nil into run. You passed a #{namespace_or_scenario_or_nowt.class}"
       end
     end
-  end
-
-  require 'stringio'
-
-  def capture_stdout
-    out = StringIO.new
-    $stdout = out
-    yield
-    r = out.string
-    return r
-  ensure
-    $stdout = STDOUT
   end
 
   def ensure_inside_scenario
