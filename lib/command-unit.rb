@@ -96,11 +96,11 @@ module CommandUnit
     @@current_scenario.current_test.add_expectation Expectation.new(desc, &i_expect_block)
   end
 
-  def success(desc = '')
+  def pass(desc = '')
     ExpectationResult.new(desc, true)
   end
 
-  def failure(desc = '')
+  def fail(desc = '')
     ExpectationResult.new(desc, false)
   end
 
