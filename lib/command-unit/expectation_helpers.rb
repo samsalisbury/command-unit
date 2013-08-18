@@ -8,4 +8,8 @@ module CommandUnit
 		ExpectationResult.new(desc, false)
 	end
 
+	def expect(thing)
+		return ExpectationResult.new('', thing)
+	end
+
 end
