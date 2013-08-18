@@ -58,4 +58,20 @@ scenario :command_unit, 'Using expectation helpers' do
 		expect_failing context[:result]
 	end
 
+	when_i 'use the expect helper with is_equal_to and the things are equal' do |context|
+		context[:result] = expect(123, &is_equal_to(123))
+	end
+
+	i_expect 'to get a passing result' do |context|
+		expect_passing context[:result]
+	end
+
+	when_i 'use the expect helper with is_equal_to and the things are not equal' do |context|
+		context[:result] = expect('my random string', &is_equal_to('my unequal string'))
+	end
+
+	i_expect 'to get a failing result' do |context|
+		expect_failing context[:result]
+	end
+
 end
