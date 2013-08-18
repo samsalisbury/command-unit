@@ -38,11 +38,19 @@ scenario :command_unit, 'Running a scenario with 1 test and 1 passing assertion'
     context[:out] = context[:scenario].run_silent
   end
 
-  i_expect 'to see the when_i text and the i_expect text' do |context|
-    if context[:out].include? 'have 1 test in the scenario' and context[:out].include? 'that this should pass'
+  i_expect 'to see the when_i text' do |context|
+    if context[:out].include? 'have 1 test in the scenario'
       success
     else 
       failure
+    end
+  end
+
+  i_expect 'to see the i_expect text' do |context|
+    if context[:out].include? 'that this should pass'
+      success
+    else
+      failure "\n\n=====\n\n#{context[:out]}\n\n=====\n\n"
     end
   end
 
