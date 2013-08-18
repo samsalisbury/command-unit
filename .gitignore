@@ -1,3 +1,4 @@
 *.gem
 .idea
 *.iml
+.DS_Store
