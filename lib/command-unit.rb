@@ -38,6 +38,7 @@ module CommandUnit
   end
 
   def run(namespace_or_scenario_or_nowt=nil, out_stream=STDOUT)
+    start_time = Time.now.to_f
     hooks = Hooks.new
     if namespace_or_scenario_or_nowt.nil?
       # Run the lot...
@@ -66,6 +67,9 @@ module CommandUnit
     message = "\nRan #{t.scenarios_run} scenarios, #{t.scenarios_passed} passed, #{t.scenarios_failed} failed (tests passed: #{t.tests_passed}, failed: #{t.tests_failed}) (expectations passed: #{t.expectations_passed}, failed: #{t.expectations_failed})\n"
 
     out_stream.puts message
+
+    time_taken = Time.now.to_f - start_time
+    out_stream.puts "Completed in #{time_taken}s"
   end
 
   def ensure_inside_scenario
