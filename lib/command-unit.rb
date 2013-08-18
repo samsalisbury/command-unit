@@ -23,7 +23,8 @@ module CommandUnit
       namespace = namespace_or_description
     end
 
-    @@scenarios.push Scenario.new(namespace, description, &block)
+    @@scenarios.push Scenario.new(namespace, description, STDOUT, &block)
+
     return @@scenarios.last
   end
 
